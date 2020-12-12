@@ -1,16 +1,5 @@
 #include <iostream>
 #include "BinaryTree.h"
-struct Node {
-    int data;
-    Node *left;
-    Node *right;
-};
-struct AVL_Node {
-    int data;
-    AVL_Node *left;
-    AVL_Node *right;
-    int height;
-};
 Node* GetNewNode(int data) {
     Node *node = new Node;
     node -> data = data;

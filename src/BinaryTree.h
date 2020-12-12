@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <stack>
 #include <queue>
+#include <iostream>
 struct Node {
     int data;
     Node *left;
@@ -34,4 +35,31 @@ void InsertAVL_Node(AVL_Node *&root, int data);
 void DeleteAVLNode(AVL_Node *&root, int data);
 void DeleteAVL_Tree(AVL_Node *&root);
 void IterativePrint(Node *root);
-
+struct TreeDataNode {       //store the key of each node of the tree
+    int data;
+    TreeDataNode *next;
+};
+struct TreeColumn {       //a Column of tree
+    TreeDataNode *head;
+    TreeDataNode *tail;
+};
+struct DoubleLLNode {
+    TreeColumn *list;
+    DoubleLLNode *prev;
+    DoubleLLNode *next;
+};
+struct ListOfColumns {      //Double linked list to store list of Columns of tree
+    DoubleLLNode *head;
+    DoubleLLNode *tail;
+};
+DoubleLLNode* NewColumn(int data);
+void AddHeadList(ListOfColumns *list, int data);
+void AddTailList(ListOfColumns *list, int data);
+TreeColumn* CreateColumn(int data);
+void AddTailColumn(TreeColumn *Column, int data);
+TreeDataNode* NewTreeDataNode(int data);
+void CreateListOfColumn(Node *root, ListOfColumns *list, DoubleLLNode *CurCol, DoubleLLNode *PrevCol);
+void DeleteColumn(TreeColumn *&Column);
+void DeleteListOfColumns(ListOfColumns *&list);
+void PrintColumn(TreeColumn *Column);
+void PrintColumnsOfTree(ListOfColumns *list);
