@@ -1,16 +1,16 @@
 #include "BinaryTree.h"
 
-AVL_Node* GetNewAVL_Node(int data) {
+AVL_Node* GetNewAVLNode(int data) {
     AVL_Node *newnode = new AVL_Node;
     newnode -> data = data;
     newnode -> left = nullptr;
     newnode -> right = nullptr;
-    newnode -> height = 0;
+    newnode -> height = 1;
     return newnode;
 }
 int GetHeight(AVL_Node *node) {
     if (!node)
-        return -1;
+        return 0;
     return node -> height;
 }
 int GetBalanceFactor(AVL_Node *node) {
@@ -34,95 +34,95 @@ void RightRotate(AVL_Node *&parent) {
     child -> height = std::max(GetHeight(child -> left),GetHeight(child -> right)) + 1;
     parent = child;
 }
-void InsertAVL_Node(AVL_Node *&root, int data) {
+void InsertAVLNode(AVL_Node *&root, int data) {
     if (!root)
-        root = GetNewAVL_Node(data);
+        root = GetNewAVLNode(data);
     else {
         if (data < root -> data)
-            InsertAVL_Node(root -> left,data);
+            InsertAVLNode(root -> left,data);
         else
-            InsertAVL_Node(root -> right,data);
+            InsertAVLNode(root -> right,data);
         root -> height = std::max(GetHeight(root -> left),GetHeight(root -> right)) + 1;
         if (GetBalanceFactor(root) > 1) {
-            if (data < (root -> left) -> data)
-                RightRotate(root);
-            else {
+            if (GetBalanceFactor(root -> left) < 0) {
                 LeftRotate(root -> left);
                 RightRotate(root);
             }
+            else
+                RightRotate(root);
         }
         if (GetBalanceFactor(root) < -1) {
-            if (data > (root -> right) -> data)
-                LeftRotate(root);
-            else {
+            if (GetBalanceFactor(root -> right) > 0) {
                 RightRotate(root -> right);
                 LeftRotate(root);
             }
+            else   
+                LeftRotate(root);
         }
     }
 }
-void DeleteAVL_Node(AVL_Node *&root, int data) {
-    if (root -> data < data)
-        DeleteAVL_Node(root -> left,data);
-    else if (root -> data > data)
-        DeleteAVL_Node(root -> right,data);
+void PrintAVLTree(AVL_Node *root) {
+    if (root) {
+        PrintAVLTree(root -> left);
+        std::cout << root -> data;
+        PrintAVLTree(root -> right);
+    }
+}
+void DeleteAVLNode(AVL_Node *&root, int data) {
+    if (!root) {
+        std::cout << "can not find the data in tree";
+        return;
+    }
+    if (data < root -> data)
+        DeleteAVLNode(root -> left,data);
+    else if (data > root -> data)
+        DeleteAVLNode(root -> right,data);
     else {
-        if (!root -> left && !root -> right) {
-            delete root;
-            root = nullptr;
-        }
-        else if (root -> left && root -> right) {
-            AVL_Node *successor = root -> right;
-            AVL_Node *ParentSuccessor = root;
-            while (successor -> left) {
-                ParentSuccessor = successor;
-                successor = successor -> left;
-            }
-            root -> data = successor -> data;
-            if (successor -> right) {
-                ParentSuccessor -> left = successor -> right;
-                delete successor;
+        if (!root -> left || !root -> right) {
+            AVL_Node *child = ((root -> left) ? root -> left : root -> right);
+            if (!child) {
+                delete root;
+                root = nullptr;
             }
             else {
-                delete successor;
-                successor = nullptr;
+                delete root;
+                root = child;
             }
         }
         else {
-            if (root -> left) {
-                root -> data = (root -> left) -> data;
-                delete root -> left;
-                root -> left = nullptr;
+            AVL_Node *successor = root -> right;
+            while (successor -> left) {
+                successor = successor -> left;
             }
-            else {
-                root -> data = (root -> right) -> data;
-                delete root -> right;
-                root -> right = nullptr;
-            }
+            root -> data = successor -> data;
+            DeleteAVLNode(root -> right, successor -> data);
         }
     }
-    root -> height = std::max(GetHeight(root -> left),GetHeight(root -> right)) + 1;
-    if (GetBalanceFactor(root) > 1) {
-        if (GetBalanceFactor(root -> left) < 0) {
-            LeftRotate(root -> left);
-            RightRotate(root);
+    //check whether the current root was delete or not
+    if (root) {
+        root -> height = std::max(GetHeight(root -> left),GetHeight(root -> right)) + 1;
+        if (GetBalanceFactor(root) > 1) {
+            if (GetBalanceFactor(root -> left) < 0) {
+                LeftRotate(root -> left);
+                RightRotate(root);
+            }
+            else
+                RightRotate(root);
         }
-        else
-            RightRotate(root);
-    }
-    else if (GetBalanceFactor(root) < -1) {
-        if (GetBalanceFactor(root -> right) > 0) {
-            RightRotate(root -> right);
-            LeftRotate(root);
+        else if (GetBalanceFactor(root) < -1) {
+            if (GetBalanceFactor(root -> right) > 0) {
+                RightRotate(root -> right);
+                LeftRotate(root);
+            }
+            else
+                LeftRotate(root);
         }
-        else
-            LeftRotate(root);
     }
 }
-void DeleteAVL_Tree(AVL_Node *&root) {
+void DeleteAVLTree(AVL_Node *&root) {
     if (root) {
-        DeleteAVL_Tree(root -> left);
-        DeleteAVL_Tree(root -> right);
+        DeleteAVLTree(root -> left);
+        DeleteAVLTree(root -> right);
         delete root;
         root = nullptr;
     }
